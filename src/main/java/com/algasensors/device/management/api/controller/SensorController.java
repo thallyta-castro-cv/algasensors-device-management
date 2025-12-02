@@ -1,6 +1,8 @@
 package com.algasensors.device.management.api.controller;
 
+import com.algasensors.device.management.models.dto.mapper.SensorMapper;
 import com.algasensors.device.management.models.dto.request.SensorRequestDTO;
+import com.algasensors.device.management.models.dto.response.SensorResponseDTO;
 import com.algasensors.device.management.models.entity.Sensor;
 import com.algasensors.device.management.models.entity.SensorId;
 import com.algasensors.device.management.repository.SensorRepository;
@@ -15,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+    private final SensorMapper sensorMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Sensor create(@RequestBody SensorRequestDTO input) {
+    public SensorResponseDTO create(@RequestBody SensorRequestDTO input) {
         Sensor sensor = Sensor.builder()
                 .id(new SensorId(IdGenerator.generateTSID()))
                 .name(input.getName())
@@ -29,6 +32,8 @@ public class SensorController {
                 .enabled(false)
                 .build();
 
-        return sensorRepository.saveAndFlush(sensor);
+        sensorRepository.saveAndFlush(sensor);
+
+        return sensorMapper.convertToModel(sensor);
     }
 }
